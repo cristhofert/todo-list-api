@@ -24,29 +24,33 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 exports.__esModule = true;
-exports.User = void 0;
+exports.Note = void 0;
 var typeorm_1 = require("typeorm");
-var Note_1 = require("./Note");
-var User = /** @class */ (function (_super) {
-    __extends(User, _super);
-    function User() {
+var User_1 = require("./User");
+var Note = /** @class */ (function (_super) {
+    __extends(Note, _super);
+    function Note() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     __decorate([
         typeorm_1.PrimaryGeneratedColumn(),
         __metadata("design:type", Number)
-    ], User.prototype, "id");
+    ], Note.prototype, "id");
     __decorate([
-        typeorm_1.Column({ unique: true }),
+        typeorm_1.Column(),
         __metadata("design:type", String)
-    ], User.prototype, "username");
+    ], Note.prototype, "label");
     __decorate([
-        typeorm_1.OneToMany(function () { return Note_1.Note; }, function (note) { return note.id; }, { cascade: true }),
-        __metadata("design:type", Array)
-    ], User.prototype, "list");
-    User = __decorate([
+        typeorm_1.Column(),
+        __metadata("design:type", Boolean)
+    ], Note.prototype, "done");
+    __decorate([
+        typeorm_1.ManyToOne(function () { return User_1.User; }, function (user) { return user.id; }, { cascade: true }),
+        __metadata("design:type", User_1.User)
+    ], Note.prototype, "user");
+    Note = __decorate([
         typeorm_1.Entity()
-    ], User);
-    return User;
+    ], Note);
+    return Note;
 }(typeorm_1.BaseEntity));
-exports.User = User;
+exports.Note = Note;
