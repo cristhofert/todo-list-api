@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.deleteNote = exports.createNote = exports.getList = exports.getUsers = exports.createUser = void 0;
+exports.updateTask = exports.deleteTask = exports.createTask = exports.getTasks = exports.getUsers = exports.createUser = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var User_1 = require("./entities/User");
 var utils_1 = require("./utils");
@@ -68,7 +68,7 @@ var getUsers = function (req, res) { return __awaiter(void 0, void 0, void 0, fu
     var users;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(User_1.User).find({ relations: ["list"] })];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(User_1.User).find()];
             case 1:
                 users = _a.sent();
                 return [2 /*return*/, res.json(users)];
@@ -76,23 +76,21 @@ var getUsers = function (req, res) { return __awaiter(void 0, void 0, void 0, fu
     });
 }); };
 exports.getUsers = getUsers;
-var getList = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var userRepo, user;
+var getTasks = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var results;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0:
-                userRepo = typeorm_1.getRepository(User_1.User);
-                return [4 /*yield*/, userRepo.findOne({ where: { id: req.params.id }, relations: ["list"] })];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Note_1.Note).find({ where: { user: req.params.id } })];
             case 1:
-                user = _a.sent();
-                if (!user)
-                    throw new utils_1.Exception("User don't exists ");
-                return [2 /*return*/, res.json(user)];
+                results = _a.sent();
+                if (!results)
+                    throw new utils_1.Exception("Tasks don't exists for it user");
+                return [2 /*return*/, res.json(results)];
         }
     });
 }); };
-exports.getList = getList;
-var createNote = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+exports.getTasks = getTasks;
+var createTask = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var userRepo, user, note, results;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -117,25 +115,44 @@ var createNote = function (req, res) { return __awaiter(void 0, void 0, void 0, 
         }
     });
 }); };
-exports.createNote = createNote;
-var deleteNote = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var userRepo, user, results;
+exports.createTask = createTask;
+var deleteTask = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var noteRepo, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Note_1.Note)];
+            case 1:
+                noteRepo = _a.sent();
+                results = noteRepo.findOne({ where: { user: req.params.id } });
+                if (!results)
+                    throw new utils_1.Exception("Tasks ID don't exists ");
+                noteRepo["delete"](req.params.id);
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.deleteTask = deleteTask;
+var updateTask = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var note, results;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                userRepo = typeorm_1.getRepository(User_1.User);
-                return [4 /*yield*/, userRepo.findOne({ where: { id: req.params.id } })];
+                if (!req.body.label)
+                    throw new utils_1.Exception("Please provide a label");
+                if (!req.body.done)
+                    throw new utils_1.Exception("Please provide a done");
+                return [4 /*yield*/, typeorm_1.getRepository(Note_1.Note).findOne({ where: { id: req.params.id } })];
             case 1:
-                user = _a.sent();
-                if (!user)
-                    throw new utils_1.Exception("User don't exists ");
-                if (user.list)
-                    user.list = [];
-                return [4 /*yield*/, typeorm_1.getRepository(User_1.User).save(user)];
+                note = _a.sent();
+                if (!note)
+                    throw new utils_1.Exception("Task don't exists ");
+                note.label = req.body.label;
+                note.done = req.body.done;
+                return [4 /*yield*/, typeorm_1.getRepository(Note_1.Note).save(note)];
             case 2:
                 results = _a.sent();
                 return [2 /*return*/, res.json(results)];
         }
     });
 }); };
-exports.deleteNote = deleteNote;
+exports.updateTask = updateTask;
